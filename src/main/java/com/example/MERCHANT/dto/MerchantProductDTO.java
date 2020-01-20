@@ -1,5 +1,6 @@
 package com.example.MERCHANT.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,16 +11,11 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class MerchantProductDTO implements Serializable {
     private String merchantId;
     private String productId;
     private int stock;
     private double price;
 
-    public MerchantProductDTO(String merchantId, String productId, int stock, double price) {
-        this.merchantId = merchantId;
-        this.productId = productId;
-        this.stock = stock;
-        this.price = price;
-    }
 }
