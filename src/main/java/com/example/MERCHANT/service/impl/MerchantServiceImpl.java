@@ -1,7 +1,5 @@
 package com.example.MERCHANT.service.impl;
 
-import com.example.MERCHANT.dto.MerchantProductDTO;
-import com.example.MERCHANT.dto.ProductDetailsByMerchantDTO;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
 import com.example.MERCHANT.repository.MerchantDetailsRepository;
@@ -10,10 +8,11 @@ import com.example.MERCHANT.service.MerchantService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,8 +24,21 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<MerchantProduct> findByProductId(String productId) {
-
        return merchantProductRepository.findByProductId(productId);
+    }
+
+    @Override
+    public MerchantProduct findByProductIdAndMerchant(String productId, String merchantId) {
+        AtomicReference<List<MerchantProduct>> merchantProducts = new AtomicReference<>();
+        Optional<MerchantDetails> merchantDetails = merchantDetailsRepository.findById(merchantId);
+        merchantDetails.ifPresent(merchantDetails1 -> {
+            merchantProducts.set(merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetails1, productId));
+        });
+        if (!CollectionUtils.isEmpty(merchantProducts.get())) {
+            return merchantProducts.get().get(0);
+        } else {
+            return  null;
+        }
     }
 
     @Override
@@ -50,11 +62,11 @@ public class MerchantServiceImpl implements MerchantService {
 
         MerchantDetails merchantDetails =  merchantDetailsRepository.findByMerchantId(merchantId);
         List<MerchantProduct> merchantProducts  = merchantProductRepository.findByMerchantDetails(merchantDetails);
-        List<String> productId= merchantProducts.stream().map(MerchantProduct::getProductId).collect(Collectors.toList());
+        List<String> productIds=merchantProducts.stream().map(MerchantProduct::getProductId).collect(Collectors.toList());
 //        List<ProductDetailsByMerchantDTO> productDetailsByMerchantDTOS =
 //                merchantProducts.stream().map(this:: productDetailsByMerchant).collect(Collectors.toList());
 
-        return productId;
+        return productIds;
 
 
     }

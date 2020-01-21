@@ -12,9 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class MerchantController {
     @Autowired
@@ -88,14 +91,39 @@ public class MerchantController {
     }
 
     @GetMapping("viewProductIdByMerchantId/{merchantId}")
-    public List<String> viewProduct(@PathVariable("merchantId") String merchantId){
+    public List<String> viewProduct(@PathVariable("merchantId") String merchantId) {
         return merchantService.findByMerchantId(merchantId);
     }
 
     @GetMapping("viewProductsByMerchantId/{merchantId}")
-    public List<ProductsDTO> viewProductsByMerchantId(@PathVariable("merchantId") String merchantId){
+    public List<ProductsDTO> viewProductsByMerchantId(@PathVariable("merchantId") String merchantId) {
         return merchantControllerProxy.getProductWithStock(merchantId);
     }
 
+    @GetMapping("viewProductByProductIdAndMerchantId/{productId}/{merchantId}")
+    public List<MerchantProduct> viewProductByProductIdAndMerchantId(@PathVariable("productId") String productId, @PathVariable("merchantId") String merchantId) {
+        return merchantService.findByProductId(productId);
+    }
+
+    @GetMapping("/productMerchant")
+    public Map<String, MerchantProduct> viewPriceAndStockByProductId(@RequestBody List<CartDTO> cartDTO)
+    {
+        Map<String, MerchantProduct> merchantProductMap = new HashMap<>();
+        cartDTO.forEach(cartDTO1 -> {
+            MerchantProduct merchantProducts = merchantService.findByProductIdAndMerchant(cartDTO1.getMerchantId(), cartDTO1.getProductId());
+            merchantProductMap.put(merchantProducts.getProductId() + "_" + merchantProducts.getMerchantDetails().getMerchantId(), merchantProducts);
+        });
+        return merchantProductMap;
+//        List<String> merchantIds=cartDTO.stream().map(CartDTO::getMerchantId).collect(Collectors.toList());
+//        List<String> productIds=cartDTO.stream().map(CartDTO::getProductId).collect(Collectors.toList());
+//        Map<String,String> merchantAndProduct = new HashMap<>();
+//        for(int i=0;i<merchantIds.size();i++) {
+//            merchantAndProduct.put(merchantIds.get(i), productIds.get(i));
+//        }
+//
+//        MerchantProductDTO merchantProductDTO;
+
+
+    }
 
 }
