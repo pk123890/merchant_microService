@@ -2,14 +2,11 @@ package com.example.MERCHANT.service.impl;
 
 import com.example.MERCHANT.controller.MerchantControllerProxy;
 import com.example.MERCHANT.dto.ProductDTO;
-import com.example.MERCHANT.dto.ProductNameDTO;
 import com.example.MERCHANT.service.ProductToId;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

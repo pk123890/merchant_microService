@@ -17,7 +17,10 @@ import java.io.Serializable;
 public class MerchantProduct implements Serializable {
     @GeneratedValue @Id
     private int key;
-    private String merchantId;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_Id")
+    private MerchantDetails merchantDetails;
     private String productId;
     private int stock;
     private double price;

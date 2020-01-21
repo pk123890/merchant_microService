@@ -14,5 +14,4 @@ public interface MerchantControllerProxy {
     List<CategoryDTO> getAllCategories();
     @GetMapping("product/viewProductsByCategoryId/{id}")
     List<ProductDTO> viewProductsByCategoryId(@PathVariable("id") String id);
-
 }
