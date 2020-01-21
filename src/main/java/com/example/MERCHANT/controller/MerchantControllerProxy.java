@@ -2,6 +2,7 @@ package com.example.MERCHANT.controller;
 
 import com.example.MERCHANT.dto.CategoryDTO;
 import com.example.MERCHANT.dto.ProductDTO;
+import com.example.MERCHANT.dto.ProductsDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,10 @@ import java.util.List;
 public interface MerchantControllerProxy {
     @GetMapping("category/getAllCategories")
     List<CategoryDTO> getAllCategories();
+
     @GetMapping("product/viewProductsByCategoryId/{id}")
     List<ProductDTO> viewProductsByCategoryId(@PathVariable("id") String id);
+
+    @GetMapping("product/productMerchant/{merchantId}")
+    List<ProductsDTO> getProductWithStock(@PathVariable("merchantId") String merchantId);
 }

@@ -23,6 +23,8 @@ public class MerchantController {
     ProductToId productToId;
     @Autowired
     MerchantService merchantService;
+    @Autowired
+    MerchantControllerProxy merchantControllerProxy;
 
     @GetMapping("/addProduct")
     public List<CategoryDTO> getAllCategories() {
@@ -74,7 +76,7 @@ public class MerchantController {
 
     }
 
-    @GetMapping("/addInventory/{productId}/{price}/{stock}")
+    @GetMapping("/editInventory/{productId}/{price}/{stock}")
     public void addInventory(@PathVariable("productId") String productId, @PathVariable("price") Double price, @PathVariable("stock") int stock) {
         MerchantProduct merchantProduct;
 
@@ -85,11 +87,14 @@ public class MerchantController {
 
     }
 
-    @GetMapping("viewProductByMerchantId/{merchantId}")
-    public void viewProduct(@PathVariable("merchantId") String Id){
+    @GetMapping("viewProductIdByMerchantId/{merchantId}")
+    public List<String> viewProduct(@PathVariable("merchantId") String merchantId){
+        return merchantService.findByMerchantId(merchantId);
+    }
 
-
-
+    @GetMapping("viewProductsByMerchantId/{merchantId}")
+    public List<ProductsDTO> viewProductsByMerchantId(@PathVariable("merchantId") String merchantId){
+        return merchantControllerProxy.getProductWithStock(merchantId);
     }
 
 
