@@ -5,18 +5,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO implements Serializable {
+public class MerchantOrderHistoryDTO {
 
+    private String productName;
 
-    private String userId;
-    private String productId;
-    private String merchantId;
-    private int counter;
+    private String timestamp;
+
+    private int quantity;
+
+    private Double price;
+
 }

@@ -1,7 +1,5 @@
 package com.example.MERCHANT.service;
-
-import com.example.MERCHANT.dto.MerchantDetailsDTO;
-import com.example.MERCHANT.dto.MerchantProductDTO;
+import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
 
@@ -14,5 +12,6 @@ public interface MerchantService {
     MerchantDetails findById(String merchantDetailsId);
     List<String> findByMerchantId(String merchantId);
     MerchantProduct findByProductIdAndMerchant(String productId, String merchantId);
+    List<MerchantOrderHistoryDTO> viewCustomer(MerchantOrderHistoryDTO merchantOrderHistoryDTO);
 
 }

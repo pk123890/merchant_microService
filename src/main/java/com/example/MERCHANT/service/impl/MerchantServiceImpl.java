@@ -1,5 +1,7 @@
 package com.example.MERCHANT.service.impl;
 
+import com.example.MERCHANT.controller.CartProxy;
+import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
 import com.example.MERCHANT.repository.MerchantDetailsRepository;
@@ -22,6 +24,9 @@ public class MerchantServiceImpl implements MerchantService {
     @Autowired
     MerchantDetailsRepository merchantDetailsRepository;
 
+    @Autowired
+    CartProxy cartProxy;
+
     @Override
     public List<MerchantProduct> findByProductId(String productId) {
        return merchantProductRepository.findByProductId(productId);
@@ -40,6 +45,11 @@ public class MerchantServiceImpl implements MerchantService {
             return  null;
         }
     }
+
+    @Override
+    public List<MerchantOrderHistoryDTO> viewCustomer(MerchantOrderHistoryDTO merchantOrderHistoryDTO) {
+        return cartProxy.orderHistoryById(merchantOrderHistoryDTO);
+        }
 
     @Override
     public MerchantProduct saveProduct(MerchantProduct merchantProduct) {

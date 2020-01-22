@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @FeignClient(name = "product", url = "http://172.16.20.51:8082")
-public interface MerchantControllerProxy {
+public interface ProductProxy {
     @GetMapping("category/getAllCategories")
     List<CategoryDTO> getAllCategories();
 

@@ -3,6 +3,7 @@ package com.example.MERCHANT.controller;
 import com.example.MERCHANT.dto.*;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
+import com.example.MERCHANT.repository.MerchantDetailsRepository;
 import com.example.MERCHANT.service.CategoryToId;
 import com.example.MERCHANT.service.MerchantService;
 import com.example.MERCHANT.service.ProductToId;
@@ -16,9 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MerchantController {
     @Autowired
     CategoryToId categoryToId;
@@ -27,7 +27,10 @@ public class MerchantController {
     @Autowired
     MerchantService merchantService;
     @Autowired
-    MerchantControllerProxy merchantControllerProxy;
+    ProductProxy productProxy;
+
+    @Autowired
+    MerchantDetailsRepository merchantDetailsRepository;
 
     @GetMapping("/addProduct")
     public List<CategoryDTO> getAllCategories() {
@@ -97,7 +100,7 @@ public class MerchantController {
 
     @GetMapping("viewProductsByMerchantId/{merchantId}")
     public List<ProductsDTO> viewProductsByMerchantId(@PathVariable("merchantId") String merchantId) {
-        return merchantControllerProxy.getProductWithStock(merchantId);
+        return productProxy.getProductWithStock(merchantId);
     }
 
     @GetMapping("viewProductByProductIdAndMerchantId/{productId}/{merchantId}")
@@ -105,13 +108,15 @@ public class MerchantController {
         return merchantService.findByProductId(productId);
     }
 
-    @GetMapping("/productMerchant")
+    @PostMapping("/productMerchant")
     public Map<String, MerchantProduct> viewPriceAndStockByProductId(@RequestBody List<CartDTO> cartDTO)
     {
         Map<String, MerchantProduct> merchantProductMap = new HashMap<>();
         cartDTO.forEach(cartDTO1 -> {
-            MerchantProduct merchantProducts = merchantService.findByProductIdAndMerchant(cartDTO1.getMerchantId(), cartDTO1.getProductId());
-            merchantProductMap.put(merchantProducts.getProductId() + "_" + merchantProducts.getMerchantDetails().getMerchantId(), merchantProducts);
+            MerchantProduct merchantProducts = merchantService.findByProductIdAndMerchant(cartDTO1.getProductId(), cartDTO1.getMerchantId());
+            if (null != merchantProducts) {
+                merchantProductMap.put(merchantProducts.getProductId() + "_" + merchantProducts.getMerchantDetails().getMerchantId(), merchantProducts);
+            }
         });
         return merchantProductMap;
 //        List<String> merchantIds=cartDTO.stream().map(CartDTO::getMerchantId).collect(Collectors.toList());
@@ -122,8 +127,25 @@ public class MerchantController {
 //        }
 //
 //        MerchantProductDTO merchantProductDTO;
-
-
     }
+
+    @GetMapping("/viewCustomer")
+    public List<MerchantOrderHistoryDTO> viewCustomer(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO){
+        return merchantService.viewCustomer(merchantOrderHistoryDTO);
+    }
+
+    @GetMapping("/addProductByMerchant/{productId}/{merchantId}/{price}/{stock}")
+    public String addProduct(@PathVariable("productId")String productId, @PathVariable("merchantId")String merchantId, @PathVariable("price") Double price, @PathVariable("stock") int stock){
+        MerchantProduct merchantProduct = new MerchantProduct();
+        MerchantDetails merchantDetails=merchantDetailsRepository.findByMerchantId(merchantId);
+
+        merchantProduct.setMerchantDetails(merchantDetails);
+        merchantProduct.setProductId(productId);
+        merchantProduct.setPrice(price);
+        merchantProduct.setStock(stock);
+        merchantService.saveProduct(merchantProduct);
+        return productId;
+    }
+
 
 }
