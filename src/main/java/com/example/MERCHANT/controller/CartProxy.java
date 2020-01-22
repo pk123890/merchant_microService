@@ -1,11 +1,10 @@
 package com.example.MERCHANT.controller;
 
 
+import com.example.MERCHANT.dto.CartDTO;
 import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -13,4 +12,7 @@ import java.util.List;
 public interface CartProxy {
     @PostMapping("/orderHistoryByMerchant")
     List<MerchantOrderHistoryDTO> orderHistoryById(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO);
+
+    @GetMapping("/checkout")
+    public List<CartDTO> checkout(@RequestHeader("authorization") String userIdHeader);
 }

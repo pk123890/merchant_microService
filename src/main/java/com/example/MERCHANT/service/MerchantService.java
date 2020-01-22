@@ -13,5 +13,8 @@ public interface MerchantService {
     List<String> findByMerchantId(String merchantId);
     MerchantProduct findByProductIdAndMerchant(String productId, String merchantId);
     List<MerchantOrderHistoryDTO> viewCustomer(MerchantOrderHistoryDTO merchantOrderHistoryDTO);
+    void editInventoryAfterOrder(String userIdHeader);
+    MerchantProduct addProduct(String productId,String merchantId,Double price,int stock);
+    void editProduct(String merchantId,String productId,Double price,int stock);
 
 }

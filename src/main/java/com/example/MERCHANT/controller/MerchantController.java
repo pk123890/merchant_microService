@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MerchantController {
@@ -82,14 +83,9 @@ public class MerchantController {
 
     }
 
-    @GetMapping("/editInventory/{productId}/{price}/{stock}")
-    public void addInventory(@PathVariable("productId") String productId, @PathVariable("price") Double price, @PathVariable("stock") int stock) {
-        MerchantProduct merchantProduct;
+    @GetMapping("/editInventory{merchantId}/{productId}/{price}/{stock}")
+    public void editProduct(@PathVariable("merchantId") String merchantId, @PathVariable("productId") String productId, @PathVariable("price") Double price, @PathVariable("stock") int stock) {
 
-        merchantProduct = merchantService.findByProductId(productId).get(0);
-        merchantProduct.setPrice(price);
-        merchantProduct.setStock(stock);
-        merchantService.saveProduct(merchantProduct);
 
     }
 
@@ -109,8 +105,7 @@ public class MerchantController {
     }
 
     @PostMapping("/productMerchant")
-    public Map<String, MerchantProduct> viewPriceAndStockByProductId(@RequestBody List<CartDTO> cartDTO)
-    {
+    public Map<String, MerchantProduct> viewPriceAndStockByProductId(@RequestBody List<CartDTO> cartDTO) {
         Map<String, MerchantProduct> merchantProductMap = new HashMap<>();
         cartDTO.forEach(cartDTO1 -> {
             MerchantProduct merchantProducts = merchantService.findByProductIdAndMerchant(cartDTO1.getProductId(), cartDTO1.getMerchantId());
@@ -130,21 +125,24 @@ public class MerchantController {
     }
 
     @GetMapping("/viewCustomer")
-    public List<MerchantOrderHistoryDTO> viewCustomer(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO){
+    public List<MerchantOrderHistoryDTO> viewCustomer(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO) {
         return merchantService.viewCustomer(merchantOrderHistoryDTO);
     }
 
     @GetMapping("/addProductByMerchant/{productId}/{merchantId}/{price}/{stock}")
-    public String addProduct(@PathVariable("productId")String productId, @PathVariable("merchantId")String merchantId, @PathVariable("price") Double price, @PathVariable("stock") int stock){
-        MerchantProduct merchantProduct = new MerchantProduct();
-        MerchantDetails merchantDetails=merchantDetailsRepository.findByMerchantId(merchantId);
-
-        merchantProduct.setMerchantDetails(merchantDetails);
-        merchantProduct.setProductId(productId);
-        merchantProduct.setPrice(price);
-        merchantProduct.setStock(stock);
-        merchantService.saveProduct(merchantProduct);
+    public String addProduct(@PathVariable("productId") String productId, @PathVariable("merchantId") String merchantId, @PathVariable("price") Double price, @PathVariable("stock") int stock) {
+       merchantService.addProduct(productId,merchantId,price,stock);
         return productId;
+    }
+//    @PostMapping("/editInventory/")
+//    public String editInventory(){
+//
+//    }
+
+    @GetMapping("/updateStockAfterOrder/{userIdHeader}")
+    public void updateInventory(@PathVariable("userIdHeader") String userIdHeader) {
+        merchantService.editInventoryAfterOrder(userIdHeader);
+
     }
 
 
