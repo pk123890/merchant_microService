@@ -10,9 +10,11 @@ import com.example.MERCHANT.entity.MerchantProduct;
 import com.example.MERCHANT.repository.MerchantDetailsRepository;
 import com.example.MERCHANT.repository.MerchantProductRepository;
 import com.example.MERCHANT.service.MerchantService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import java.util.List;
@@ -82,15 +84,25 @@ public class MerchantServiceImpl implements MerchantService {
         return merchantProductRepository.save(merchantProduct);
 
     }
-
+    private static final String TOPIC="Products";
+    @Autowired
+    KafkaTemplate<String, String> kafkaTemplate;
     @Override
     public void editProduct(String merchantId, String productId, Double price, int stock) {
+
+
         MerchantProduct merchantProduct;
 
         merchantProduct = merchantProductRepository.findByProductId(productId).get(0);
         merchantProduct.setPrice(price);
         merchantProduct.setStock(stock);
         merchantProductRepository.save(merchantProduct);
+        try {
+            kafkaTemplate.send(TOPIC, (new ObjectMapper()).writeValueAsString(merchantProduct));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
