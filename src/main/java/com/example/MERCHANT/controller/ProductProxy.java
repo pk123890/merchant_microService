@@ -1,11 +1,11 @@
 package com.example.MERCHANT.controller;
 
-import com.example.MERCHANT.dto.CategoryDTO;
-import com.example.MERCHANT.dto.ProductDTO;
-import com.example.MERCHANT.dto.ProductsDTO;
+import com.example.MERCHANT.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -19,4 +19,7 @@ public interface ProductProxy {
 
     @GetMapping("product/productMerchant/{merchantId}")
     List<ProductsDTO> getProductWithStock(@PathVariable("merchantId") String merchantId);
+
+//    @PostMapping("/addProductByMerchant")
+//    MerchantProductDTO addProduct(@RequestBody AddMerchant addMerchant);
 }

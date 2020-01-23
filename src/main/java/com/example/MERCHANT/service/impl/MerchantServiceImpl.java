@@ -1,6 +1,7 @@
 package com.example.MERCHANT.service.impl;
-
 import com.example.MERCHANT.controller.CartProxy;
+import com.example.MERCHANT.controller.ProductProxy;
+import com.example.MERCHANT.dto.AddMerchant;
 import com.example.MERCHANT.dto.CartDTO;
 import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import com.example.MERCHANT.dto.MerchantProductDTO;
@@ -10,6 +11,7 @@ import com.example.MERCHANT.repository.MerchantDetailsRepository;
 import com.example.MERCHANT.repository.MerchantProductRepository;
 import com.example.MERCHANT.service.MerchantService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +29,9 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Autowired
     CartProxy cartProxy;
+
+    @Autowired
+    ProductProxy productProxy;
 
     @Override
     public List<MerchantProduct> findByProductId(String productId) {
@@ -53,8 +58,8 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void editInventoryAfterOrder(String userIdHeader) {
-        List<CartDTO> productsInCart = cartProxy.checkout(userIdHeader);
+    public void editInventoryAfterOrder(HttpHeaders headers) {
+        List<CartDTO> productsInCart = cartProxy.checkout(headers);
         productsInCart.forEach(cartDTO -> {
             List<MerchantProduct> merchantProductDTOList = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(cartDTO.getMerchantId()), cartDTO.getProductId());
             if (!CollectionUtils.isEmpty(merchantProductDTOList)) {
@@ -85,6 +90,19 @@ public class MerchantServiceImpl implements MerchantService {
         merchantProduct = merchantProductRepository.findByProductId(productId).get(0);
         merchantProduct.setPrice(price);
         merchantProduct.setStock(stock);
+        merchantProductRepository.save(merchantProduct);
+    }
+
+    @Override
+    public void editInventory(MerchantProductDTO merchantProductDTO) {
+        MerchantDetails merchantDetails = new MerchantDetails();
+        MerchantProduct merchantProduct=new MerchantProduct();
+        merchantProduct.setProductId(merchantProductDTO.getProductId());
+        merchantProduct.setStock(merchantProductDTO.getStock());
+        merchantProduct.setPrice(merchantProductDTO.getPrice());
+        String id=merchantProductDTO.getMerchantId();
+        merchantDetails.setMerchantId(id);
+        merchantProduct.setMerchantDetails(merchantDetails);
         merchantProductRepository.save(merchantProduct);
     }
 

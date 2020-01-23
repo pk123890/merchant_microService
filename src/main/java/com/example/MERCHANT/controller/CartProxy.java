@@ -3,6 +3,8 @@ package com.example.MERCHANT.controller;
 
 import com.example.MERCHANT.dto.CartDTO;
 import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
+import com.example.MERCHANT.dto.ProductDTO;
+import com.google.common.net.HttpHeaders;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,5 +16,5 @@ public interface CartProxy {
     List<MerchantOrderHistoryDTO> orderHistoryById(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO);
 
     @GetMapping("/checkout")
-    public List<CartDTO> checkout(@RequestHeader("authorization") String userIdHeader);
+    List<CartDTO> checkout(@RequestHeader HttpHeaders headers);
 }

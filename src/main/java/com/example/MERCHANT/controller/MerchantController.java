@@ -1,5 +1,4 @@
 package com.example.MERCHANT.controller;
-
 import com.example.MERCHANT.dto.*;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
@@ -134,16 +133,15 @@ public class MerchantController {
        merchantService.addProduct(productId,merchantId,price,stock);
         return productId;
     }
-//    @PostMapping("/editInventory/")
-//    public String editInventory(){
-//
-//    }
+    @PostMapping("/editInventory/")
+    public void editInventory(@RequestBody MerchantProductDTO merchantProductDTO){
+
+        merchantService.editInventory(merchantProductDTO);
+    }
 
     @GetMapping("/updateStockAfterOrder/{userIdHeader}")
     public void updateInventory(@PathVariable("userIdHeader") String userIdHeader) {
         merchantService.editInventoryAfterOrder(userIdHeader);
-
     }
-
 
 }

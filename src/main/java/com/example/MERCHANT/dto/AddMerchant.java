@@ -5,21 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-
+import java.util.Map;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO implements Serializable {
-
-
-    private String productId;
-    private String merchantId;
+public class AddMerchant {
     private String productName;
+    private String productDescription;
+    private Map productAttribute;
+    private String productUsp;
     private String imageUrl;
+    private String categoryId;
     private Double price;
-    private int counter;
     private int stock;
+    private String merchantId;
 }
