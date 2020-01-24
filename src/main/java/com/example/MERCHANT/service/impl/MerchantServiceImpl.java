@@ -1,9 +1,7 @@
 package com.example.MERCHANT.service.impl;
 import com.example.MERCHANT.controller.CartProxy;
 import com.example.MERCHANT.controller.ProductProxy;
-import com.example.MERCHANT.dto.ProductsInCartDTO;
-import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
-import com.example.MERCHANT.dto.MerchantProductDTO;
+import com.example.MERCHANT.dto.*;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
 import com.example.MERCHANT.repository.MerchantDetailsRepository;
@@ -11,14 +9,15 @@ import com.example.MERCHANT.repository.MerchantProductRepository;
 import com.example.MERCHANT.service.MerchantService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -60,16 +59,28 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void editInventoryAfterOrder( HttpHeaders httpHeaders) {
-        List<ProductsInCartDTO> productsInCart = cartProxy.checkout(httpHeaders);
-        productsInCart.forEach(productsInCartDTO -> {
-            List<MerchantProduct> merchantProductDTOList = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(productsInCartDTO.getMerchantId()), productsInCartDTO.getProductId());
-            if (!CollectionUtils.isEmpty(merchantProductDTOList)) {
-                MerchantProduct merchantProduct = merchantProductDTOList.get(0);
-                merchantProduct.setStock(merchantProduct.getStock() - productsInCartDTO.getCounter());
+    public CartResponseDTO editInventoryAfterOrder(CartDTO cartDTO) {
+        CartResponseDTO cartResponseDTO=new CartResponseDTO();
+        List<ProductsInCartDTO> productsInCartList=cartDTO.getProductsInCartDTOS();
+        List<String> stockOutProductIds= new ArrayList<>();
+        productsInCartList.forEach(productsInCartDTO -> {
+            List<MerchantProduct> merchantProducts = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(productsInCartDTO.getMerchantId()), productsInCartDTO.getProductId());
+            if (!CollectionUtils.isEmpty(merchantProducts)) {
+                MerchantProduct merchantProduct = merchantProducts.get(0);
+                if((merchantProduct.getStock()-productsInCartDTO.getCounter()) >= 0) {
+                    merchantProduct.setStock(merchantProduct.getStock() - productsInCartDTO.getCounter());
+                }
+                else{
+                    cartResponseDTO.setSuccess(false);
+                    stockOutProductIds.add(productsInCartDTO.getProductId());
+                    cartResponseDTO.setProductId(stockOutProductIds);
+
+                }
                 merchantProductRepository.save(merchantProduct);
+
             }
         });
+        return cartResponseDTO;
     }
 
     @Override

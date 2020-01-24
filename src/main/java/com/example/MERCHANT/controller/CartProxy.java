@@ -1,6 +1,7 @@
 package com.example.MERCHANT.controller;
 
 
+import com.example.MERCHANT.dto.CartDTO;
 import com.example.MERCHANT.dto.ProductsInCartDTO;
 import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import com.google.common.net.HttpHeaders;
@@ -13,7 +14,4 @@ import java.util.List;
 public interface CartProxy {
     @PostMapping("/orderHistoryByMerchant")
     List<MerchantOrderHistoryDTO> orderHistoryById(@RequestBody MerchantOrderHistoryDTO merchantOrderHistoryDTO);
-
-    @GetMapping("order/checkout")
-    List<ProductsInCartDTO> checkout(@RequestHeader("Auth") HttpHeaders httpHeaders);
 }
