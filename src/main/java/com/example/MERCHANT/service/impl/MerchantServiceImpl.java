@@ -60,26 +60,25 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public CartResponseDTO editInventoryAfterOrder(CartDTO cartDTO) {
-        CartResponseDTO cartResponseDTO=new CartResponseDTO();
-        List<ProductsInCartDTO> productsInCartList=cartDTO.getProductsInCartDTOS();
-        List<String> stockOutProductIds= new ArrayList<>();
+        CartResponseDTO cartResponseDTO = new CartResponseDTO();
+        cartResponseDTO.setSuccess(true);
+        List<ProductsInCartDTO> productsInCartList = cartDTO.getProductDTO();
+        List<String> stockOutProductIds = new ArrayList<>();
         productsInCartList.forEach(productsInCartDTO -> {
             List<MerchantProduct> merchantProducts = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(productsInCartDTO.getMerchantId()), productsInCartDTO.getProductId());
             if (!CollectionUtils.isEmpty(merchantProducts)) {
                 MerchantProduct merchantProduct = merchantProducts.get(0);
-                if((merchantProduct.getStock()-productsInCartDTO.getCounter()) >= 0) {
+                if ((merchantProduct.getStock() - productsInCartDTO.getCounter()) >= 0) {
                     merchantProduct.setStock(merchantProduct.getStock() - productsInCartDTO.getCounter());
-                }
-                else{
+                } else {
                     cartResponseDTO.setSuccess(false);
                     stockOutProductIds.add(productsInCartDTO.getProductId());
-                    cartResponseDTO.setProductId(stockOutProductIds);
-
                 }
                 merchantProductRepository.save(merchantProduct);
 
             }
         });
+        cartResponseDTO.setProductId(stockOutProductIds);
         return cartResponseDTO;
     }
 

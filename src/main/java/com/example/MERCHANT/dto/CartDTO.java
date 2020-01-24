@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class CartDTO {
     private String cartId;
-    private List<ProductsInCartDTO> productsInCartDTOS;
+    private List<ProductsInCartDTO> productDTO;
 }
