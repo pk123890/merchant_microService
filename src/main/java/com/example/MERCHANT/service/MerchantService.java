@@ -18,7 +18,7 @@ public interface MerchantService {
     List<MerchantOrderHistoryDTO> viewCustomer(MerchantOrderHistoryDTO merchantOrderHistoryDTO);
     void editInventoryAfterOrder(HttpHeaders headers);
     MerchantProduct addProduct(String productId,String merchantId,Double price,int stock);
-    void editProduct(String merchantId, String productId, Double price, int stock);
+    void editProduct(MerchantProductDTO merchantProductDTO);
     void editInventory(MerchantProductDTO merchantProductDTO);
 
 }

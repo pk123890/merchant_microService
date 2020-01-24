@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO implements Serializable {
+public class ProductsInCartDTO implements Serializable {
 
 
     private String productId;

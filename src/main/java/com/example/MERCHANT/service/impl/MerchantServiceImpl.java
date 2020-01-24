@@ -1,8 +1,7 @@
 package com.example.MERCHANT.service.impl;
 import com.example.MERCHANT.controller.CartProxy;
 import com.example.MERCHANT.controller.ProductProxy;
-import com.example.MERCHANT.dto.AddMerchant;
-import com.example.MERCHANT.dto.CartDTO;
+import com.example.MERCHANT.dto.ProductsInCartDTO;
 import com.example.MERCHANT.dto.MerchantOrderHistoryDTO;
 import com.example.MERCHANT.dto.MerchantProductDTO;
 import com.example.MERCHANT.entity.MerchantDetails;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,13 +60,13 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void editInventoryAfterOrder(HttpHeaders headers) {
-        List<CartDTO> productsInCart = cartProxy.checkout(headers);
-        productsInCart.forEach(cartDTO -> {
-            List<MerchantProduct> merchantProductDTOList = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(cartDTO.getMerchantId()), cartDTO.getProductId());
+    public void editInventoryAfterOrder( HttpHeaders httpHeaders) {
+        List<ProductsInCartDTO> productsInCart = cartProxy.checkout(httpHeaders);
+        productsInCart.forEach(productsInCartDTO -> {
+            List<MerchantProduct> merchantProductDTOList = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(productsInCartDTO.getMerchantId()), productsInCartDTO.getProductId());
             if (!CollectionUtils.isEmpty(merchantProductDTOList)) {
                 MerchantProduct merchantProduct = merchantProductDTOList.get(0);
-                merchantProduct.setStock(merchantProduct.getStock() - cartDTO.getCounter());
+                merchantProduct.setStock(merchantProduct.getStock() - productsInCartDTO.getCounter());
                 merchantProductRepository.save(merchantProduct);
             }
         });
@@ -88,15 +88,13 @@ public class MerchantServiceImpl implements MerchantService {
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
     @Override
-    public void editProduct(String merchantId, String productId, Double price, int stock) {
+    public void editProduct(MerchantProductDTO merchantProductDTO) {
 
 
-        MerchantProduct merchantProduct;
-
-        merchantProduct = merchantProductRepository.findByProductId(productId).get(0);
-        merchantProduct.setPrice(price);
-        merchantProduct.setStock(stock);
-        merchantProductRepository.save(merchantProduct);
+        List<MerchantProduct> merchantProduct =merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(merchantProductDTO.getMerchantId()), merchantProductDTO.getProductId());
+        merchantProduct.get(0).setPrice(merchantProductDTO.getPrice());
+        merchantProduct.get(0).setStock(merchantProductDTO.getStock());
+        merchantProductRepository.save(merchantProduct.get(0));
         try {
             kafkaTemplate.send(TOPIC, (new ObjectMapper()).writeValueAsString(merchantProduct));
         } catch (JsonProcessingException e) {
