@@ -15,10 +15,5 @@ public class ProductToIdImpl implements ProductToId {
     @Autowired
     ProductProxy productProxy;
 
-    @Override
-    public List<String> viewProductsByCategoryId(String id) {
-        List<ProductDTO> productById = productProxy.viewProductsByCategoryId(id).stream().collect(Collectors.toList());
-        List<String> productNames = productById.stream().map(ProductDTO::getProductName).collect(Collectors.toList());
-        return productNames;
-    }
+
 }

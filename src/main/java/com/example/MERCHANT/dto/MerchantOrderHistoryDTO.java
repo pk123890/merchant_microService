@@ -10,12 +10,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MerchantOrderHistoryDTO {
+    private String merchantId;
 
     private String productName;
 
     private String timestamp;
 
-    private int quantity;
+    private int counter;
 
     private Double price;
 

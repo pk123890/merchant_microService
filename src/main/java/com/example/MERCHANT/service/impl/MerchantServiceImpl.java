@@ -1,5 +1,6 @@
 package com.example.MERCHANT.service.impl;
-import com.example.MERCHANT.controller.CartProxy;
+
+
 import com.example.MERCHANT.controller.ProductProxy;
 import com.example.MERCHANT.dto.*;
 import com.example.MERCHANT.entity.MerchantDetails;
@@ -17,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -27,10 +27,6 @@ public class MerchantServiceImpl implements MerchantService {
     MerchantProductRepository merchantProductRepository;
     @Autowired
     MerchantDetailsRepository merchantDetailsRepository;
-
-    @Autowired
-    CartProxy cartProxy;
-
     @Autowired
     ProductProxy productProxy;
 
@@ -53,10 +49,6 @@ public class MerchantServiceImpl implements MerchantService {
         }
     }
 
-    @Override
-    public List<MerchantOrderHistoryDTO> viewCustomer(MerchantOrderHistoryDTO merchantOrderHistoryDTO) {
-        return cartProxy.orderHistoryById(merchantOrderHistoryDTO);
-    }
 
     @Override
     public CartResponseDTO editInventoryAfterOrder(CartDTO cartDTO) {
@@ -83,25 +75,27 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public MerchantProduct addProduct(String productId,String merchantId,Double price,int stock) {
+    public MerchantProduct addProduct(MerchantProductDTO merchantProductDTO) {
         MerchantProduct merchantProduct = new MerchantProduct();
-        MerchantDetails merchantDetails = merchantDetailsRepository.findByMerchantId(merchantId);
+        MerchantDetails merchantDetails = merchantDetailsRepository.findByMerchantId(merchantProductDTO.getMerchantId());
 
         merchantProduct.setMerchantDetails(merchantDetails);
-        merchantProduct.setProductId(productId);
-        merchantProduct.setPrice(price);
-        merchantProduct.setStock(stock);
+        merchantProduct.setProductId(merchantProductDTO.getProductId());
+        merchantProduct.setPrice(merchantProductDTO.getPrice());
+        merchantProduct.setStock(merchantProductDTO.getStock());
         return merchantProductRepository.save(merchantProduct);
 
     }
-    private static final String TOPIC="Products";
+
+    private static final String TOPIC = "Products";
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
+
     @Override
     public void editProduct(MerchantProductDTO merchantProductDTO) {
 
 
-        List<MerchantProduct> merchantProduct =merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(merchantProductDTO.getMerchantId()), merchantProductDTO.getProductId());
+        List<MerchantProduct> merchantProduct = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(merchantProductDTO.getMerchantId()), merchantProductDTO.getProductId());
         merchantProduct.get(0).setPrice(merchantProductDTO.getPrice());
         merchantProduct.get(0).setStock(merchantProductDTO.getStock());
         merchantProductRepository.save(merchantProduct.get(0));
@@ -116,11 +110,11 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public void editInventory(MerchantProductDTO merchantProductDTO) {
         MerchantDetails merchantDetails = new MerchantDetails();
-        MerchantProduct merchantProduct=new MerchantProduct();
+        MerchantProduct merchantProduct = new MerchantProduct();
         merchantProduct.setProductId(merchantProductDTO.getProductId());
         merchantProduct.setStock(merchantProductDTO.getStock());
         merchantProduct.setPrice(merchantProductDTO.getPrice());
-        String id=merchantProductDTO.getMerchantId();
+        String id = merchantProductDTO.getMerchantId();
         merchantDetails.setMerchantId(id);
         merchantProduct.setMerchantDetails(merchantDetails);
         merchantProductRepository.save(merchantProduct);
@@ -137,24 +131,31 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public MerchantDetails findById(String merchantDetailsId) {
-        return null;
-    }
-
-    @Override
     public List<String> findByMerchantId(String merchantId) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         MerchantDetails merchantDetails = merchantDetailsRepository.findByMerchantId(merchantId);
         List<MerchantProduct> merchantProducts = merchantProductRepository.findByMerchantDetails(merchantDetails);
         List<String> productIds = merchantProducts.stream().map(MerchantProduct::getProductId).collect(Collectors.toList());
-//        List<ProductDetailsByMerchantDTO> productDetailsByMerchantDTOS =
-//                merchantProducts.stream().map(this:: productDetailsByMerchant).collect(Collectors.toList());
 
         return productIds;
 
 
     }
+
+    @Override
+    public List<String> viewProductsByCategoryId(String id) {
+        List<ProductDTO> productById = productProxy.viewProductsByCategoryId(id).stream().collect(Collectors.toList());
+        List<String> productNames = productById.stream().map(ProductDTO::getProductName).collect(Collectors.toList());
+        return productNames;
+    }
+
+    @Override
+    public List<CategoryDTO> getAllCategories() {
+        List Categories = productProxy.getAllCategories().stream().collect(Collectors.toList());
+        return Categories;
+    }
+
 
 //    public ProductDetailsByMerchantDTO productDetailsByMerchant(MerchantProduct merchantProduct){
 //        ProductDetailsByMerchantDTO productDetailsByMerchantDTO1 = new ProductDetailsByMerchantDTO();

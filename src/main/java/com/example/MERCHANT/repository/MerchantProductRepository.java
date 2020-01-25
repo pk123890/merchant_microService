@@ -7,9 +7,11 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface MerchantProductRepository extends CrudRepository<MerchantProduct,String> {
+public interface MerchantProductRepository extends CrudRepository<MerchantProduct, String> {
     List<MerchantProduct> findByProductId(String productId);
+
     List<MerchantProduct> findByMerchantDetailsAndProductId(MerchantDetails merchantDetails, String productId);
+
     List<MerchantProduct> findByMerchantDetails(MerchantDetails merchantDetails);
 
 }

@@ -15,7 +15,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Table
 public class MerchantProduct implements Serializable {
-    @GeneratedValue @Id
+    @GeneratedValue
+    @Id
     private int key;
 
     @ManyToOne

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class CategoryToIdImpl implements com.example.MERCHANT.service.CategoryToId {
     @Autowired
     ProductProxy productProxy;
+
     @Override
     public List<CategoryDTO> getAllCategories() {
         List Categories = productProxy.getAllCategories().stream().collect(Collectors.toList());
