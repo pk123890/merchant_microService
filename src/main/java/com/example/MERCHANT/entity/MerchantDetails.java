@@ -19,11 +19,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class MerchantDetails implements Serializable {
 
-    //@GeneratedValue
     @Id
     private String merchantId;
     private String merchantName;
-    private String gstIN;
+    private String merchantEmailId;
+//    private String gstIN;
     private double merchantRating;
 
 

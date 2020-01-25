@@ -87,20 +87,22 @@ public class MerchantServiceImpl implements MerchantService {
 
     }
 
-    private static final String TOPIC = "Products";
+    private static final String TOPIC = "UpdatePrice";
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public void editProduct(MerchantProductDTO merchantProductDTO) {
 
-
+        KafkaProductUpdateDTO kafkaProductUpdateDTO=new KafkaProductUpdateDTO();
         List<MerchantProduct> merchantProduct = merchantProductRepository.findByMerchantDetailsAndProductId(merchantDetailsRepository.findByMerchantId(merchantProductDTO.getMerchantId()), merchantProductDTO.getProductId());
         merchantProduct.get(0).setPrice(merchantProductDTO.getPrice());
         merchantProduct.get(0).setStock(merchantProductDTO.getStock());
+        kafkaProductUpdateDTO.setPrice(merchantProductDTO.getPrice());
+        kafkaProductUpdateDTO.setProductId(merchantProductDTO.getProductId());
         merchantProductRepository.save(merchantProduct.get(0));
         try {
-            kafkaTemplate.send(TOPIC, (new ObjectMapper()).writeValueAsString(merchantProduct));
+            kafkaTemplate.send(TOPIC, (new ObjectMapper()).writeValueAsString(kafkaProductUpdateDTO));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -126,7 +128,7 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public MerchantDetails saveProduct(MerchantDetails merchantDetails) {
+    public MerchantDetails saveDetails(MerchantDetails merchantDetails) {
         return merchantDetailsRepository.save(merchantDetails);
     }
 

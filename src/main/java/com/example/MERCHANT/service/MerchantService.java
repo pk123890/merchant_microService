@@ -12,7 +12,7 @@ public interface MerchantService {
 
     MerchantProduct saveProduct(MerchantProduct merchantProductDTO);
 
-    MerchantDetails saveProduct(MerchantDetails merchantDetails);
+    MerchantDetails saveDetails(MerchantDetails merchantDetails);
 
     List<String> findByMerchantId(String merchantId);
 
@@ -29,5 +29,6 @@ public interface MerchantService {
     List<String> viewProductsByCategoryId(String id);
 
     List<CategoryDTO> getAllCategories();
+
 
 }
