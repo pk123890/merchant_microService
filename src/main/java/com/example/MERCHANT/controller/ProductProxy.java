@@ -20,6 +20,6 @@ public interface ProductProxy {
     @GetMapping("product/productMerchant/{merchantId}")
     List<ProductsDTO> getProductWithStock(@PathVariable("merchantId") String merchantId);
 
-    @PostMapping("/addProductByMerchant")
-    MerchantProductDTO addProduct(@RequestBody AddMerchant addMerchant);
+    @PostMapping("product/addProductByMerchant")
+    MerchantProductDTO addProduct(@RequestBody AddMerchantDTO addMerchantDTO);
 }

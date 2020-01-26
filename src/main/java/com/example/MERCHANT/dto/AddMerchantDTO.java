@@ -11,7 +11,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddMerchant {
+public class AddMerchantDTO {
     private String productName;
     private String productDescription;
     private Map productAttribute;

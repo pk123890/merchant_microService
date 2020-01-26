@@ -10,6 +10,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductsDTO {
+    private String productId;
     private String productName;
     private String productDescription;
     private Map productAttribute;

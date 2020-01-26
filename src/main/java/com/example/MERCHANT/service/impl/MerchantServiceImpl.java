@@ -146,16 +146,28 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public List<String> viewProductsByCategoryId(String id) {
+    public List<MerchantEditProductDTO> viewProductsByCategoryId(String id) {
         List<ProductDTO> productById = productProxy.viewProductsByCategoryId(id).stream().collect(Collectors.toList());
-        List<String> productNames = productById.stream().map(ProductDTO::getProductName).collect(Collectors.toList());
-        return productNames;
+        List<MerchantEditProductDTO> merchantEditProductDTOList=productById.stream().map(productDTO -> {
+            MerchantEditProductDTO merchantEditProductDTO = new MerchantEditProductDTO();
+            merchantEditProductDTO.setProductId(productDTO.getProductId());
+            merchantEditProductDTO.setProductName(productDTO.getProductName());
+            return merchantEditProductDTO;
+        }).collect(Collectors.toList());
+        return merchantEditProductDTOList;
     }
 
     @Override
     public List<CategoryDTO> getAllCategories() {
         List Categories = productProxy.getAllCategories().stream().collect(Collectors.toList());
         return Categories;
+    }
+
+    @Override
+    public double RatingFindByMerchantId(String merchantId) {
+
+        MerchantDetails merchantDetails=merchantDetailsRepository.findByMerchantId(merchantId);
+        return merchantDetails.getMerchantRating();
     }
 
 

@@ -26,9 +26,11 @@ public interface MerchantService {
 
     void editInventory(MerchantProductDTO merchantProductDTO);
 
-    List<String> viewProductsByCategoryId(String id);
+    List<MerchantEditProductDTO> viewProductsByCategoryId(String id);
 
     List<CategoryDTO> getAllCategories();
+
+    double RatingFindByMerchantId(String merchantId);
 
 
 }
