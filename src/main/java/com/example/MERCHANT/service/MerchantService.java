@@ -3,14 +3,13 @@ package com.example.MERCHANT.service;
 import com.example.MERCHANT.dto.*;
 import com.example.MERCHANT.entity.MerchantDetails;
 import com.example.MERCHANT.entity.MerchantProduct;
-import com.google.common.net.HttpHeaders;
 
 import java.util.List;
 
 public interface MerchantService {
     List<MerchantProduct> findByProductId(String productId);
 
-    MerchantProduct saveProduct(MerchantProduct merchantProductDTO);
+    MerchantProduct saveProduct(MerchantProduct merchantProduct);
 
     MerchantDetails saveDetails(MerchantDetails merchantDetails);
 

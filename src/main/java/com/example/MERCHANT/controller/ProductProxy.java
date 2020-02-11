@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "product", url = "http://172.16.20.51:8082")
+@FeignClient(name = "product", url = "http://10.177.7.167:8082")
 public interface ProductProxy {
     @GetMapping("category/getAllCategories")
     List<CategoryDTO> getAllCategories();
